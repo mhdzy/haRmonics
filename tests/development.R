@@ -1,47 +1,45 @@
 ## libraries
 library(devtools)
 library(haRmonics)
+library(plot3D)
+library(rgl)
 
 ## check Ylm harmonics
-L=4
-M=-3
-phi <- seq(0, 2*pi, by = pi/20)
-theta <- seq(0, pi, by = pi/40)
+l <- 6
+m <- 0
+d <- 2
+
+axis_lim <- c(-1, 1)
 
 {
-  A <- tidyr::crossing(phi, theta)
-  Ylm <- seq(1, nrow(A))
-  for (i in 1:nrow(A)) {
-    Ylm[i] <- haRmonics::sphericalHarmonicY2(l = L, m = M, phi = A$phi[i], theta = A$theta[i])
-  }
-  A$Ylm <- Ylm
+  C <- xyzSphericalHarmonics(l, m, d)
+  D <- -C
+  Y <- rptSphericalHarmonics(l, m, d)
+  Z <- -Y
 
-  B <- list()
-  for (j in 1:nrow(A)) {
-    B[[j]] <- haRmonics::sph2car(A$Ylm[j], A$theta[j], A$phi[j])
-  }
-
-  vec_x <- unlist(lapply(B, function(x) x$x))
-  vec_y <- unlist(lapply(B, function(x) x$y))
-  vec_z <- unlist(lapply(B, function(x) x$z))
-  C <- tibble::tibble(x = vec_x, y = vec_y, z = vec_z)
+  J <- dplyr::bind_rows(C, D)
 }
 
-# full
-rgl::plot3d(C)
+# positive and negative values
+rgl::plot3d(
+  J,
+  xlim = axis_lim,
+  ylim = axis_lim,
+  zlim = axis_lim
+)
 
 # Real
-rgl::plot3d(x=Re(C$x), y=Re(C$y), z=Re(C$z))
+rgl::plot3d(x=Re(J$x), y=Re(J$y), z=Re(J$z))
 
 # Imaginary
-rgl::plot3d(x=Im(C$x), y=Im(C$y), z=Im(C$z))
+rgl::plot3d(x=Im(J$x), y=Im(J$y), z=Im(J$z))
 
 ## COMPLEX PHASE
-co2ph <- lapply(A$Ylm, haRmonics::complex2phase)
+co2ph <- lapply(A$Ylm, complex2phase)
 phases <- unlist(lapply(co2ph, function(x) x$theta))
 phases[is.nan(phases)] <- 0
 
 ### LAGUERRE POLYNOMIALS
 x_vals <- seq(-2, 2, by=0.1)
-y_vals <- unlist(lapply(x_vals, function(x) haRmonics::assoc_laguerre(n=3, k=1, x)))
+y_vals <- unlist(lapply(x_vals, function(x) assoc_laguerre(n=3, k=1, x)))
 plot(x_vals, y_vals)

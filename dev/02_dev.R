@@ -28,11 +28,14 @@ golem::add_module( name = "legendre" ) # Name of the module
 ## Creates fct_* and utils_*
 golem::add_utils( "self" )
 golem::add_utils( "binomial" )
-golem::add_utils( "legendre" )
-golem::add_utils( "sphericalHarmonicY" )
 golem::add_utils( "coords" )
+golem::add_utils( "legendre" )
 golem::add_utils( "laguerre" )
+golem::add_utils( "sphericalHarmonicK" )
 golem::add_utils( "sphericalHarmonicR" )
+golem::add_utils( "sphericalHarmonicY" )
+golem::add_utils( "xyzSphericalHarmonics" )
+golem::add_utils( "rptSphericalHarmonics" )
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
