@@ -3,16 +3,16 @@ library(devtools)
 library(haRmonics)
 
 ## check Ylm harmonics
-L=3
-M=0
-phi <- seq(0, 2*pi, by = pi/100)
-theta <- seq(0, pi, by = pi/200)
+L=4
+M=-3
+phi <- seq(0, 2*pi, by = pi/20)
+theta <- seq(0, pi, by = pi/40)
 
 {
   A <- tidyr::crossing(phi, theta)
   Ylm <- seq(1, nrow(A))
   for (i in 1:nrow(A)) {
-    Ylm[i] <- haRmonics::sphericalHarmonicY(l = L, m = M, phi = A$phi[i], theta = A$theta[i])
+    Ylm[i] <- haRmonics::sphericalHarmonicY2(l = L, m = M, phi = A$phi[i], theta = A$theta[i])
   }
   A$Ylm <- Ylm
 
@@ -27,10 +27,6 @@ theta <- seq(0, pi, by = pi/200)
   C <- tibble::tibble(x = vec_x, y = vec_y, z = vec_z)
 }
 
-co2ph <- lapply(A$Ylm, haRmonics::complex2phase)
-phases <- unlist(lapply(co2ph, function(x) x$theta))
-phases[is.nan(phases)] <- 0
-
 # full
 rgl::plot3d(C)
 
@@ -39,6 +35,11 @@ rgl::plot3d(x=Re(C$x), y=Re(C$y), z=Re(C$z))
 
 # Imaginary
 rgl::plot3d(x=Im(C$x), y=Im(C$y), z=Im(C$z))
+
+## COMPLEX PHASE
+co2ph <- lapply(A$Ylm, haRmonics::complex2phase)
+phases <- unlist(lapply(co2ph, function(x) x$theta))
+phases[is.nan(phases)] <- 0
 
 ### LAGUERRE POLYNOMIALS
 x_vals <- seq(-2, 2, by=0.1)
